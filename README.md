@@ -1,23 +1,54 @@
-# SuviMind AI Chatbot 🤖✦
+# SuviMind — AI Chatbot 🤖
 
-A full stack AI chatbot built with **React + Vite** (frontend) and **Node.js + Express** (backend), powered by the **Anthropic Claude API**.
+> A production-grade full stack AI chatbot built with React.js frontend, Node.js + Express backend, powered by the Groq API (Llama 3.3 70B). API keys are secured server-side and never exposed to the browser.
+
+---
+
+## 🔗 Live Demo
+
+| | Link |
+|--|--|
+| 🌐 Frontend | [suvi-ai.vercel.app](https://suvi-ai.vercel.app) |
+| ⚙️ Backend | Deployed on Render |
+| 💻 GitHub | [SwethaArumugam10/suvi-ai](https://github.com/SwethaArumugam10/suvi-ai) |
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React 18, Vite 5, Custom Hooks |
+| Backend | Node.js, Express.js |
+| AI Model | Groq API — Llama 3.3 70B |
+| State Management | React Hooks (useState, useCallback, useRef) |
+| Deployment | Vercel (frontend) · Render (backend) |
+
+---
+
+## ✨ Features
+
+- 💬 Real-time multi-turn AI conversation
+- 🔒 API key secured server-side — never exposed to browser
+- 🧠 Full conversation history sent on every request for context
+- ⚡ Typing indicator while AI is responding
+- 🧹 Clear chat to reset conversation
+- 📱 Responsive — works on mobile and desktop
+- ✅ Input validation on both frontend and backend
 
 ---
 
 ## 🏗️ Architecture
 
 ```
-Frontend (React + Vite)            Backend (Node.js + Express)
-        │                                      │
-  User types message              ┌────────────┤
-        │                         │  API key locked server-side
-  POST /api/chat ────────────────►│  Model locked server-side
-        │                         │  Input validation
-  AI reply ◄───────────────────── │  Proxies to Anthropic
-                                   └────────────┤
-                                         │
-                                  Anthropic Claude API
+User → React Frontend → Node/Express Backend → Groq API (Llama 3.3)
+              ↑                   ↑
+        Conversation          API key &
+        state (hooks)       model locked
+                            server-side
 ```
+
+The frontend only sends the conversation history. The backend handles the API key, model selection, and system prompt — clients cannot modify these.
 
 ---
 
@@ -25,35 +56,39 @@ Frontend (React + Vite)            Backend (Node.js + Express)
 
 ```
 suvi-ai/
-├── frontend/
+├── frontend/                   # React + Vite
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── Header.jsx
-│   │   │   ├── Message.jsx
-│   │   │   ├── MessageList.jsx
-│   │   │   ├── ChatInput.jsx
-│   │   │   └── TypingDots.jsx
+│   │   │   ├── Header.jsx      # App title
+│   │   │   ├── Message.jsx     # Chat bubble (user / assistant)
+│   │   │   ├── MessageList.jsx # Scrollable chat area
+│   │   │   ├── ChatInput.jsx   # Textarea + send button
+│   │   │   └── TypingDots.jsx  # Animated loading indicator
 │   │   ├── hooks/
-│   │   │   └── useChat.js
+│   │   │   └── useChat.js      # All API logic & conversation state
 │   │   ├── App.jsx
-│   │   ├── config.js
-│   │   ├── index.css
+│   │   ├── config.js           # API URL + UI strings only
 │   │   └── main.jsx
-│   ├── index.html
-│   ├── vite.config.js
 │   └── package.json
 │
-└── backend/
-    ├── index.js
-    ├── .env.example
+└── backend/                    # Node.js + Express
+    ├── index.js                # Secure Groq API proxy
+    ├── .env.example            # Template (no real keys)
     └── package.json
 ```
 
 ---
 
-## 🚀 Setup & Run
+## 🚀 Run Locally
 
-### Step 1 — Backend
+### 1. Clone the repo
+
+```bash
+git clone https://github.com/SwethaArumugam10/suvi-ai.git
+cd suvi-ai
+```
+
+### 2. Backend setup
 
 ```bash
 cd backend
@@ -61,18 +96,18 @@ npm install
 cp .env.example .env
 ```
 
-Open `.env` and add your key:
+Add your Groq API key to `.env`:
 ```
-ANTHROPIC_API_KEY=your_real_key_here
+GROQ_API_KEY=your_key_here
 ```
-Get a free key at: https://console.anthropic.com
+Get a free key at [console.groq.com](https://console.groq.com)
 
 ```bash
 node index.js
-# ✦ SuviMind backend running → http://localhost:3001
+# ✦ Backend running → http://localhost:3001
 ```
 
-### Step 2 — Frontend
+### 3. Frontend setup
 
 ```bash
 cd frontend
@@ -81,39 +116,22 @@ npm run dev
 # Local: http://localhost:5173
 ```
 
-Open **http://localhost:5173** — your chatbot is live!
+Open **http://localhost:5173** — chatbot is live!
 
 ---
 
-## 📦 Tech Stack
+## 🔒 Security Design
 
-| Layer | Tech |
-|-------|------|
-| Frontend | React 18, Vite 5 |
-| Backend | Node.js, Express.js |
-| AI | Anthropic Claude API (claude-sonnet-4) |
-| Deployment | Vercel (frontend), Render / Railway (backend) |
-
----
-
-## 🔒 Security
-
-- API key lives only in `backend/.env` — never in the browser
+- `GROQ_API_KEY` lives only in `backend/.env` — never in the browser
 - Model name is fixed server-side — clients cannot swap models
-- Input validation on every request
-- CORS restricted to your frontend origin
+- System prompt is fixed server-side
+- Input validated on every POST request
+- CORS restricted to the frontend origin only
+- `.env` excluded from git via `.gitignore`
 
 ---
 
-## 📤 Push to GitHub
+## 👩‍💻 Author
 
-```bash
-# From suvi-ai/ root
-git init
-git add .
-git commit -m "Initial commit: SuviMind AI chatbot"
-git remote add origin https://github.com/YOUR_USERNAME/suvi-ai.git
-git push -u origin main --force
-```
-
-The `.gitignore` already excludes `.env` and `node_modules` — your API key is safe.
+**Swetha Arumugam** — Full Stack Developer  
+[LinkedIn](https://linkedin.com/in/swetha-arumugam-504369238) · [GitHub](https://github.com/SwethaArumugam10)
